@@ -4,37 +4,41 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { Header } from './components/Header';
-import { Hero } from './components/Hero';
-import { Features } from './components/Features';
-import { Benefits } from './components/Benefits';
-import { CTA } from './components/CTA';
-import { Footer } from './components/Footer';
-
-function HomePage() {
-  return (
-    <div className="min-h-screen bg-white">
-      <Hero />
-      <Features />
-      <Benefits />
-      <CTA />
-      <Footer />
-    </div>
-  );
-}
+import { DashboardLayout } from './pages/doctor/DashboardLayout';
+import { DashboardOverview } from './pages/doctor/DashboardOverview';
+import { PublicLayout } from './layouts/PublicLayout';
+import { HomePage } from './pages/HomePage';
 
 function App() {
   return (
     <BrowserRouter>
-      <Header />
-      <main className="pt-16"> {/* Add padding top to account for fixed header */}
-        <Routes>
+      <Routes>
+        {/* Public Routes with Header and Footer */}
+        <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/auth/login" element={<LoginPage />} />
-          <Route path="/auth/register" element={<RegisterPage />} />
-          <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
-        </Routes>
-      </main>
+        </Route>
+
+        {/* Auth Routes */}
+        <Route path="/auth/*" element={
+          <>
+            <Header />
+            <main className="pt-16">
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+              </Routes>
+            </main>
+          </>
+        } />
+           
+        {/* Doctor Dashboard Routes - No shared header */}
+        <Route path="/doctor/*" element={<DashboardLayout />}>
+          <Route index element={<DashboardOverview />} />
+          {/* Add other dashboard routes here */}
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }
