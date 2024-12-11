@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "src/AfyaChain_emr_backend"
+]
+resolver = "2"
