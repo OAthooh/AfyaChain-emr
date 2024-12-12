@@ -1,6 +1,25 @@
 import React, { useState } from 'react';
-import { BarChart, LineChart, PieChart, TrendingUp, Users, Calendar, Download, Filter, Search, RefreshCw } from 'lucide-react';
+import { BarChart as BarChartIcon, LineChart as LineChartIcon, PieChart as PieChartIcon, TrendingUp, Users, Calendar, Download, Filter, Search, RefreshCw } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Area,
+  AreaChart
+} from 'recharts';
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 interface AnalyticsRecord {
   id: string;
@@ -18,7 +37,7 @@ interface AnalyticsRecord {
   charts: {
     type: 'bar' | 'line' | 'pie';
     title: string;
-    data: any;
+    data: any[];
   }[];
   insights: {
     type: 'positive' | 'negative' | 'neutral';
@@ -26,6 +45,99 @@ interface AnalyticsRecord {
   }[];
   recommendations: string[];
 }
+
+const generateChartData = (type: string, category: string) => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+  
+  switch (category) {
+    case 'Patient':
+      if (type === 'pie') {
+        return [
+          { name: '0-18', value: 250 },
+          { name: '19-35', value: 400 },
+          { name: '36-50', value: 300 },
+          { name: '51-65', value: 200 },
+          { name: '65+', value: 100 }
+        ];
+      } else {
+        return months.map(month => ({
+          name: month,
+          patients: Math.floor(1000 + Math.random() * 500),
+          newPatients: Math.floor(100 + Math.random() * 200)
+        }));
+      }
+
+    case 'Treatment':
+      if (type === 'bar') {
+        return [
+          { name: 'Cardiology', success: 85, total: 100 },
+          { name: 'Orthopedics', success: 90, total: 100 },
+          { name: 'Neurology', success: 78, total: 100 },
+          { name: 'Pediatrics', success: 92, total: 100 },
+          { name: 'Oncology', success: 88, total: 100 }
+        ];
+      } else {
+        return months.map(month => ({
+          name: month,
+          avgDays: Math.floor(10 + Math.random() * 5),
+          expectedDays: 12
+        }));
+      }
+
+    case 'Financial':
+      if (type === 'line') {
+        return months.map(month => ({
+          name: month,
+          revenue: Math.floor(200000 + Math.random() * 100000),
+          expenses: Math.floor(150000 + Math.random() * 50000),
+          profit: Math.floor(50000 + Math.random() * 50000)
+        }));
+      } else {
+        return [
+          { name: 'Staff', value: 45 },
+          { name: 'Equipment', value: 25 },
+          { name: 'Supplies', value: 20 },
+          { name: 'Maintenance', value: 5 },
+          { name: 'Other', value: 5 }
+        ];
+      }
+
+    case 'Operations':
+      if (type === 'line') {
+        return months.map(month => ({
+          name: month,
+          occupancy: Math.floor(60 + Math.random() * 30),
+          target: 85
+        }));
+      } else {
+        return [
+          { name: 'Emergency', waitTime: 15 },
+          { name: 'Urgent Care', waitTime: 30 },
+          { name: 'Regular', waitTime: 45 },
+          { name: 'Specialist', waitTime: 60 }
+        ];
+      }
+
+    case 'Staff':
+      if (type === 'pie') {
+        return [
+          { name: 'Doctors', value: 30 },
+          { name: 'Nurses', value: 45 },
+          { name: 'Admin', value: 15 },
+          { name: 'Support', value: 10 }
+        ];
+      } else {
+        return months.map(month => ({
+          name: month,
+          productivity: Math.floor(70 + Math.random() * 20),
+          target: 85
+        }));
+      }
+
+    default:
+      return [];
+  }
+};
 
 export function AnalyticsRecords() {
   const [records, setRecords] = useState<AnalyticsRecord[]>([
@@ -60,12 +172,12 @@ export function AnalyticsRecords() {
         {
           type: 'pie',
           title: 'Age Distribution',
-          data: {}
+          data: generateChartData('pie', 'Patient')
         },
         {
           type: 'line',
           title: 'Patient Growth Trend',
-          data: {}
+          data: generateChartData('line', 'Patient')
         }
       ],
       insights: [
@@ -114,12 +226,12 @@ export function AnalyticsRecords() {
         {
           type: 'bar',
           title: 'Treatment Success by Department',
-          data: {}
+          data: generateChartData('bar', 'Treatment')
         },
         {
           type: 'line',
           title: 'Recovery Time Trends',
-          data: {}
+          data: generateChartData('line', 'Treatment')
         }
       ],
       insights: [
@@ -168,12 +280,12 @@ export function AnalyticsRecords() {
         {
           type: 'line',
           title: 'Revenue Trends',
-          data: {}
+          data: generateChartData('line', 'Financial')
         },
         {
           type: 'bar',
           title: 'Cost Distribution',
-          data: {}
+          data: generateChartData('bar', 'Financial')
         }
       ],
       insights: [
@@ -222,12 +334,12 @@ export function AnalyticsRecords() {
         {
           type: 'line',
           title: 'Occupancy Trends',
-          data: {}
+          data: generateChartData('line', 'Operations')
         },
         {
           type: 'bar',
           title: 'Wait Time by Department',
-          data: {}
+          data: generateChartData('bar', 'Operations')
         }
       ],
       insights: [
@@ -276,12 +388,12 @@ export function AnalyticsRecords() {
         {
           type: 'pie',
           title: 'Staff Distribution',
-          data: {}
+          data: generateChartData('pie', 'Staff')
         },
         {
           type: 'line',
           title: 'Productivity Trends',
-          data: {}
+          data: generateChartData('line', 'Staff')
         }
       ],
       insights: [
@@ -306,6 +418,79 @@ export function AnalyticsRecords() {
   const [selectedPeriod, setSelectedPeriod] = useState('quarter');
   const [isExporting, setIsExporting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const renderChart = (chart: { type: string; title: string; data: any[] }, category: string) => {
+    const data = chart.data || generateChartData(chart.type, category);
+
+    switch (chart.type) {
+      case 'bar':
+        return (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#8884d8" />
+              <Bar dataKey="success" fill="#82ca9d" />
+              <Bar dataKey="total" fill="#8884d8" />
+              <Bar dataKey="waitTime" fill="#82ca9d" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+      
+      case 'line':
+        return (
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="patients" stroke="#8884d8" />
+              <Line type="monotone" dataKey="newPatients" stroke="#82ca9d" />
+              <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+              <Line type="monotone" dataKey="expenses" stroke="#82ca9d" />
+              <Line type="monotone" dataKey="profit" stroke="#ffc658" />
+              <Line type="monotone" dataKey="occupancy" stroke="#8884d8" />
+              <Line type="monotone" dataKey="target" stroke="#82ca9d" strokeDasharray="5 5" />
+              <Line type="monotone" dataKey="productivity" stroke="#8884d8" />
+              <Line type="monotone" dataKey="avgDays" stroke="#8884d8" />
+              <Line type="monotone" dataKey="expectedDays" stroke="#82ca9d" strokeDasharray="5 5" />
+            </LineChart>
+          </ResponsiveContainer>
+        );
+      
+      case 'pie':
+        return (
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {data.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        );
+      
+      default:
+        return null;
+    }
+  };
 
   const handleExport = async () => {
     try {
@@ -353,6 +538,10 @@ export function AnalyticsRecords() {
           ...metric,
           value: updateMetricValue(metric.value, metric.unit),
           trend: updateTrendValue(metric.trend)
+        })),
+        charts: record.charts.map(chart => ({
+          ...chart,
+          data: generateChartData(chart.type, record.category)
         }))
       }));
 
@@ -524,11 +713,9 @@ export function AnalyticsRecords() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {record.charts.map((chart, index) => (
-                <div key={index} className="bg-gray-50 rounded-lg p-4 h-64">
+                <div key={index} className="bg-gray-50 rounded-lg p-4">
                   <h4 className="text-sm font-medium text-gray-700 mb-2">{chart.title}</h4>
-                  <div className="flex items-center justify-center h-48 bg-gray-100 rounded">
-                    <span className="text-gray-400">Chart Visualization</span>
-                  </div>
+                  {renderChart(chart, record.category)}
                 </div>
               ))}
             </div>
@@ -567,7 +754,7 @@ export function AnalyticsRecords() {
 
       {filteredRecords.length === 0 && (
         <div className="text-center py-12">
-          <BarChart className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+          <BarChartIcon className="h-12 w-12 mx-auto text-gray-400 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No Analytics Records Found</h3>
           <p className="text-gray-500">No records match your current search criteria.</p>
         </div>
