@@ -20,6 +20,12 @@ import AppointmentPage from './pages/registrationDashboard/SidebarPages/Appointm
 import DepartmentPage from './pages/registrationDashboard/SidebarPages/DepartMentPage';
 import RecordPage from './pages/registrationDashboard/SidebarPages/RecordPage';
 import SettingsPage from './pages/registrationDashboard/SidebarPages/SettingsPage';
+import { BillingLayout } from './pages/billingDashboard/BillingLayout';
+import { BillingOverview } from './pages/billingDashboard/sidebarPages/BillingOverview';
+import { InvoiceTable } from './pages/billingDashboard/sidebarPages/InvoiceTable';
+import { TransactionList } from './pages/billingDashboard/sidebarPages/TransactionList';
+import { ReportsPage } from './pages/billingDashboard/sidebarPages/ReportsPage';
+import { BillingSettings } from './pages/billingDashboard/sidebarPages/BillingSettings';
 
 function App() {
   return (
@@ -45,7 +51,7 @@ function App() {
           </>
         } />
            
-        {/* Doctor Dashboard Routes - No shared header */}
+        {/* Doctor Dashboard Routes */}
         <Route path="/doctor/*" element={<DashboardLayout />}>
           <Route index element={<DashboardOverview />} />
           <Route path="patients" element={<PatientsPage />} />
@@ -54,6 +60,7 @@ function App() {
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="messages" element={<MessagesPage />} />
         </Route>
+
         {/* Registration Dashboard Routes */}
         <Route path="/registration/*" element={<RegistrationDashboardLayout />}>
           <Route index element={<PatientQueue />} />
@@ -62,6 +69,15 @@ function App() {
           <Route path="departments" element={<DepartmentPage />} />
           <Route path="records" element={<RecordPage />} />
           <Route path="settings" element={<SettingsPage />} />
+        </Route>
+
+        {/* Billing Dashboard Routes */}
+        <Route path="/billing/*" element={<BillingLayout />}>
+          <Route index element={<BillingOverview />} />
+          <Route path="invoices" element={<InvoiceTable dateRange="7d" filters={{ status: 'all', search: '' }} onViewInvoice={() => {}} />} />
+          <Route path="transactions" element={<TransactionList dateRange="7d" filters={{ status: 'all', paymentMethod: 'all', search: '' }} />} />
+          <Route path="reports" element={<ReportsPage />} />
+          <Route path="settings" element={<BillingSettings />} />
         </Route>
       </Routes>
     </BrowserRouter>
