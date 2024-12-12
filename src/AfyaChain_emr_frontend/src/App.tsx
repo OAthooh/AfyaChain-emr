@@ -20,6 +20,8 @@ import AppointmentPage from './pages/registrationDashboard/SidebarPages/Appointm
 import DepartmentPage from './pages/registrationDashboard/SidebarPages/DepartMentPage';
 import RecordPage from './pages/registrationDashboard/SidebarPages/RecordPage';
 import SettingsPage from './pages/registrationDashboard/SidebarPages/SettingsPage';
+import { HealthRecordsLayout } from './pages/records/HealthRecordsLayout';
+import { HealthRecordsPage } from './pages/records/HealthRecordsPage';
 
 function App() {
   return (
@@ -28,6 +30,19 @@ function App() {
         {/* Public Routes with Header and Footer */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
+        </Route>
+
+        {/* Health Records Routes */}
+        <Route path="/health-records" element={<HealthRecordsLayout />}>
+        <Route index element={<HealthRecordsPage activeSection={0} />} />
+          <Route path="appointments" element={<HealthRecordsPage activeSection={1} />} />
+          <Route path="reports" element={<HealthRecordsPage activeSection={2} />} />
+          <Route path="patient-info" element={<HealthRecordsPage activeSection={3} />} />
+          <Route path="compliance" element={<HealthRecordsPage activeSection={4} />} />
+          <Route path="analytics" element={<HealthRecordsPage activeSection={5} />} />
+          <Route path="help" element={<HealthRecordsPage activeSection={6} />} />
+          <Route path="settings" element={<HealthRecordsPage activeSection={7} />} />
+          <Route path="notifications" element={<HealthRecordsPage activeSection={8} />} />
         </Route>
 
         {/* Auth Routes */}
