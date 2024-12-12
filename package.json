@@ -12,5 +12,9 @@
   "workspaces": [
     "src/AfyaChain_emr_frontend"
   ],
-  "private": true
+  "private": true,
+  "dependencies": {
+    "chart.js": "^4.4.7",
+    "react-chartjs-2": "^5.2.0"
+  }
 }
