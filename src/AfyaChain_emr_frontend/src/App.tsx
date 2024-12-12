@@ -4,8 +4,13 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { Header } from './components/Header';
-import { DashboardLayout } from './pages/doctor/DashboardLayout';
-import { DashboardOverview } from './pages/doctor/DashboardOverview';
+import { DashboardLayout } from './pages/doctorDashboard/DashboardLayout';
+import { DashboardOverview } from './pages/doctorDashboard/DashboardOverview';
+import { PatientsPage } from './pages/doctorDashboard/PatientsPage';
+import { AppointmentsPage } from './pages/doctorDashboard/AppointmentsPage';
+import { PrescriptionsPage } from './pages/doctorDashboard/PrescriptionsPage';
+import { AnalyticsPage } from './pages/doctorDashboard/AnalyticsPage';
+import { MessagesPage } from './pages/doctorDashboard/MessagesPage';
 import { PublicLayout } from './layouts/PublicLayout';
 import { HomePage } from './pages/HomePage';
 import { RegistrationDashboardLayout } from './pages/registrationDashboard/DashboardLayout';
@@ -43,8 +48,13 @@ function App() {
         {/* Doctor Dashboard Routes - No shared header */}
         <Route path="/doctor/*" element={<DashboardLayout />}>
           <Route index element={<DashboardOverview />} />
-          {/* Add other dashboard routes here */}
+          <Route path="patients" element={<PatientsPage />} />
+          <Route path="appointments" element={<AppointmentsPage />} />
+          <Route path="prescriptions" element={<PrescriptionsPage />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
+          <Route path="messages" element={<MessagesPage />} />
         </Route>
+        {/* Registration Dashboard Routes */}
         <Route path="/registration/*" element={<RegistrationDashboardLayout />}>
           <Route index element={<PatientQueue />} />
           <Route path="registration" element={<RegistrationPage />} />
