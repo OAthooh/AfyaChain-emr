@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { 
   CreditCard, 
   Download, 
-  FileText, 
   AlertCircle, 
   Calendar,
   Receipt,
@@ -56,7 +55,7 @@ export function PatientBilling() {
             <h3 className="text-lg font-medium text-gray-900">Outstanding Balance</h3>
             <AlertCircle className="h-5 w-5 text-yellow-500" />
           </div>
-          <p className="mt-2 text-3xl font-bold text-gray-900">$523.50</p>
+          <p className="mt-2 text-3xl font-bold text-gray-900">Kshs. 523.50</p>
           <button className="mt-4 w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
             Pay Now
           </button>
@@ -68,7 +67,7 @@ export function PatientBilling() {
             <Calendar className="h-5 w-5 text-gray-400" />
           </div>
           <p className="mt-2 text-3xl font-bold text-gray-900">Oct 30</p>
-          <p className="mt-1 text-sm text-gray-500">$150.00 payment plan installment</p>
+          <p className="mt-1 text-sm text-gray-500">Kshs. 150.00 payment plan installment</p>
         </Card>
 
         <Card className="p-6">
@@ -77,7 +76,7 @@ export function PatientBilling() {
             <Shield className="h-5 w-5 text-blue-500" />
           </div>
           <p className="mt-2 text-3xl font-bold text-gray-900">75%</p>
-          <p className="mt-1 text-sm text-gray-500">$3,000 of $4,000 met</p>
+          <p className="mt-1 text-sm text-gray-500">Kshs. 3,000 of Kshs.4,000 met</p>
         </Card>
       </div>
 
@@ -131,7 +130,7 @@ export function PatientBilling() {
   );
 }
 
-function BillItem({ date, dueDate, amount, status, description, provider }: Bill) {
+function BillItem({ dueDate, amount, status, description, provider }: Bill) {
   return (
     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
       <div className="flex items-center space-x-4">
@@ -180,11 +179,11 @@ function InsuranceCard({ insurance, type }: { insurance: InsuranceInfo; type: st
           </div>
           <div>
             <p className="text-gray-500">Copay</p>
-            <p className="font-medium">${insurance.copay}</p>
+            <p className="font-medium">Kshs. {insurance.copay}</p>
           </div>
           <div>
             <p className="text-gray-500">Deductible</p>
-            <p className="font-medium">${insurance.deductible}</p>
+            <p className="font-medium">Kshs. {insurance.deductible}</p>
           </div>
         </div>
       </div>
@@ -219,7 +218,7 @@ function PaymentHistoryItem({ date, amount, method, reference }: {
   return (
     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
       <div>
-        <p className="text-sm font-medium text-gray-900">${amount.toFixed(2)} Payment</p>
+        <p className="text-sm font-medium text-gray-900">Kshs. {amount.toFixed(2)} Payment</p>
         <p className="text-xs text-gray-500">{method}</p>
         <p className="text-xs text-gray-500">Ref: {reference}</p>
       </div>

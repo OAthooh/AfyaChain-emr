@@ -5,6 +5,10 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { Header } from './components/Header';
+import { PublicLayout } from './layouts/PublicLayout';
+import { HomePage } from './pages/HomePage';
+
+// Doctor Dashboard
 import { DashboardLayout } from './pages/doctorDashboard/DashboardLayout';
 import { DashboardOverview } from './pages/doctorDashboard/DashboardOverview';
 import { PatientsPage } from './pages/doctorDashboard/PatientsPage';
@@ -12,8 +16,8 @@ import { AppointmentsPage } from './pages/doctorDashboard/AppointmentsPage';
 import { PrescriptionsPage } from './pages/doctorDashboard/PrescriptionsPage';
 import { AnalyticsPage } from './pages/doctorDashboard/AnalyticsPage';
 import { MessagesPage } from './pages/doctorDashboard/MessagesPage';
-import { PublicLayout } from './layouts/PublicLayout';
-import { HomePage } from './pages/HomePage';
+
+// Registration Dashboard
 import { RegistrationDashboardLayout } from './pages/registrationDashboard/DashboardLayout';
 import PatientQueue from './pages/registrationDashboard/components/PatientQue';
 import RegistrationPage from './pages/registrationDashboard/SidebarPages/RegistrationPage';
@@ -24,7 +28,7 @@ import SettingsPage from './pages/registrationDashboard/SidebarPages/SettingsPag
 import { HealthRecordsLayout } from './pages/records/HealthRecordsLayout';
 import { HealthRecordsPage } from './pages/records/HealthRecordsPage';
 
-// Patient Dashboard Imports
+// Patient Dashboard
 import { PatientDashboardLayout } from './pages/patientDashboard/PatientDashboardLayout';
 import { PatientOverview } from './pages/patientDashboard/PatientOverview';
 import { PatientAppointments } from './pages/patientDashboard/PatientAppointments';
@@ -41,6 +45,11 @@ import { InvoiceTable } from './pages/billingDashboard/sidebarPages/InvoiceTable
 import { TransactionList } from './pages/billingDashboard/sidebarPages/TransactionList';
 import { ReportsPage } from './pages/billingDashboard/sidebarPages/ReportsPage';
 import { BillingSettings } from './pages/billingDashboard/sidebarPages/BillingSettings';
+
+// Patient Integration Components
+import { HealthAnalytics } from './pages/patientDashboard/components/analytics/HealthAnalytics';
+import { DeviceSync } from './pages/patientDashboard/components/intergration/DeviceSync';
+import { TelemedicineIntegration } from './pages/patientDashboard/components/intergration/TelemedicineIntegration';
 
 function App() {
   return (
@@ -111,6 +120,11 @@ function App() {
           <Route path="messages" element={<PatientMessages />} />
           <Route path="billing" element={<PatientBilling />} />
           <Route path="education" element={<PatientEducation />} />
+          
+          {/* New Integration Routes */}
+          <Route path="analytics" element={<HealthAnalytics />} />
+          <Route path="devices" element={<DeviceSync />} />
+          <Route path="telemedicine" element={<TelemedicineIntegration />} />
         </Route>
 
         {/* Billing Dashboard Routes */}

@@ -1,6 +1,6 @@
 // src/pages/patientDashboard/PatientResults.tsx
 import { useState } from 'react';
-import { FileText, Download, Filter, AlertCircle, Calendar, Activity } from 'lucide-react';
+import { FileText, Download, AlertCircle, Calendar, Activity } from 'lucide-react';
 import { Card } from '../../components/ui/card';
 
 type ResultCategory = 'all' | 'lab' | 'imaging' | 'pathology';

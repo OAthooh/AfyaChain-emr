@@ -1,4 +1,4 @@
-// src/pages/patientdashboard/components/PatientDashboardSidebar.tsx
+// src/pages/patientDashboard/components/PatientDashboardSidebar.tsx
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -11,10 +11,14 @@ import {
   Receipt,
   BookOpen,
   Settings,
-  LogOut 
+  LogOut,
+  BarChart2,
+  Smartphone,
+  Video
 } from 'lucide-react';
 
 const navigation = [
+  // Main Navigation
   { name: 'Overview', href: '/patient', icon: LayoutDashboard },
   { name: 'Appointments', href: '/patient/appointments', icon: CalendarDays },
   { name: 'Medical Records', href: '/patient/records', icon: FileText },
@@ -24,6 +28,11 @@ const navigation = [
   { name: 'Messages', href: '/patient/messages', icon: MessageSquare },
   { name: 'Billing', href: '/patient/billing', icon: Receipt },
   { name: 'Education', href: '/patient/education', icon: BookOpen },
+  
+  // Integration Features
+  { name: 'Health Analytics', href: '/patient/analytics', icon: BarChart2 },
+  { name: 'Connected Devices', href: '/patient/devices', icon: Smartphone },
+  { name: 'Telemedicine', href: '/patient/telemedicine', icon: Video }
 ];
 
 export function PatientDashboardSidebar() {
@@ -48,7 +57,7 @@ export function PatientDashboardSidebar() {
         ))}
       </nav>
       
-      <div className="p-4 border-t border-gray-200 space-y-2">
+      <div className="p-4 border-t border-gray-200">
         <button className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-colors">
           <Settings className="h-5 w-5 mr-3" />
           Settings
