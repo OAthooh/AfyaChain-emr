@@ -22,6 +22,7 @@ import RecordPage from './pages/registrationDashboard/SidebarPages/RecordPage';
 import SettingsPage from './pages/registrationDashboard/SidebarPages/SettingsPage';
 import { HealthRecordsLayout } from './pages/records/HealthRecordsLayout';
 import { HealthRecordsPage } from './pages/records/HealthRecordsPage';
+import { AppointmentRecords } from './pages/records/AppointmentRecords';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         {/* Health Records Routes */}
         <Route path="/health-records" element={<HealthRecordsLayout />}>
           <Route index element={<HealthRecordsPage />} />
+          <Route path="appointments" element={<AppointmentRecords />} />
           {/* Add other health record routes here */}
         </Route>
 
