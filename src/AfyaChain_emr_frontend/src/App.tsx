@@ -8,6 +8,13 @@ import { DashboardLayout } from './pages/doctor/DashboardLayout';
 import { DashboardOverview } from './pages/doctor/DashboardOverview';
 import { PublicLayout } from './layouts/PublicLayout';
 import { HomePage } from './pages/HomePage';
+import { RegistrationDashboardLayout } from './pages/registrationDashboard/DashboardLayout';
+import PatientQueue from './pages/registrationDashboard/components/PatientQue';
+import RegistrationPage from './pages/registrationDashboard/SidebarPages/RegistrationPage';
+import AppointmentPage from './pages/registrationDashboard/SidebarPages/AppointmentPage';
+import DepartmentPage from './pages/registrationDashboard/SidebarPages/DepartMentPage';
+import RecordPage from './pages/registrationDashboard/SidebarPages/RecordPage';
+import SettingsPage from './pages/registrationDashboard/SidebarPages/SettingsPage';
 
 function App() {
   return (
@@ -37,6 +44,14 @@ function App() {
         <Route path="/doctor/*" element={<DashboardLayout />}>
           <Route index element={<DashboardOverview />} />
           {/* Add other dashboard routes here */}
+        </Route>
+        <Route path="/registration/*" element={<RegistrationDashboardLayout />}>
+          <Route index element={<PatientQueue />} />
+          <Route path="registration" element={<RegistrationPage />} />
+          <Route path="appointments" element={<AppointmentPage />} />
+          <Route path="departments" element={<DepartmentPage />} />
+          <Route path="records" element={<RecordPage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
