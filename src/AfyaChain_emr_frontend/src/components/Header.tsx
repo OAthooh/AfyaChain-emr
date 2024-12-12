@@ -4,8 +4,8 @@ import { Activity, Menu, X } from 'lucide-react';
 
 const navigation = [
   { name: 'Features', href: '#features' },
-  { name: 'For Providers', href: '#providers' },
-  { name: 'For Patients', href: '#patients' },
+  // { name: 'For Providers', href: '#providers' },
+  // { name: 'For Patients', href: '#patients' },
   { name: 'About Us', href: '#about' },
   { name: 'Contact', href: '#contact' }
 ];

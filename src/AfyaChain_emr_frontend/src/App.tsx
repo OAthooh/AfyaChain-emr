@@ -1,3 +1,4 @@
+// src/App.tsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
@@ -20,6 +21,20 @@ import AppointmentPage from './pages/registrationDashboard/SidebarPages/Appointm
 import DepartmentPage from './pages/registrationDashboard/SidebarPages/DepartMentPage';
 import RecordPage from './pages/registrationDashboard/SidebarPages/RecordPage';
 import SettingsPage from './pages/registrationDashboard/SidebarPages/SettingsPage';
+import { HealthRecordsLayout } from './pages/records/HealthRecordsLayout';
+import { HealthRecordsPage } from './pages/records/HealthRecordsPage';
+
+// Patient Dashboard Imports
+import { PatientDashboardLayout } from './pages/patientDashboard/PatientDashboardLayout';
+import { PatientOverview } from './pages/patientDashboard/PatientOverview';
+import { PatientAppointments } from './pages/patientDashboard/PatientAppointments';
+import { PatientRecords } from './pages/patientDashboard/PatientRecords';
+import { PatientMedications } from './pages/patientDashboard/PatientMedications';
+import { PatientResults } from './pages/patientDashboard/PatientResults';
+import { PatientTracking } from './pages/patientDashboard/PatientTracking';
+import { PatientMessages } from './pages/patientDashboard/PatientMessages';
+import { PatientBilling } from './pages/patientDashboard/PatientBilling';
+import { PatientEducation } from './pages/patientDashboard/PatientEducation';
 import { BillingLayout } from './pages/billingDashboard/BillingLayout';
 import { BillingOverview } from './pages/billingDashboard/sidebarPages/BillingOverview';
 import { InvoiceTable } from './pages/billingDashboard/sidebarPages/InvoiceTable';
@@ -34,6 +49,19 @@ function App() {
         {/* Public Routes with Header and Footer */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
+        </Route>
+
+        {/* Health Records Routes */}
+        <Route path="/health-records" element={<HealthRecordsLayout />}>
+        <Route index element={<HealthRecordsPage activeSection={0} />} />
+          <Route path="appointments" element={<HealthRecordsPage activeSection={1} />} />
+          <Route path="reports" element={<HealthRecordsPage activeSection={2} />} />
+          <Route path="patient-info" element={<HealthRecordsPage activeSection={3} />} />
+          <Route path="compliance" element={<HealthRecordsPage activeSection={4} />} />
+          <Route path="analytics" element={<HealthRecordsPage activeSection={5} />} />
+          <Route path="help" element={<HealthRecordsPage activeSection={6} />} />
+          <Route path="settings" element={<HealthRecordsPage activeSection={7} />} />
+          <Route path="notifications" element={<HealthRecordsPage activeSection={8} />} />
         </Route>
 
         {/* Auth Routes */}
@@ -61,6 +89,7 @@ function App() {
           <Route path="messages" element={<MessagesPage />} />
         </Route>
 
+
         {/* Registration Dashboard Routes */}
         <Route path="/registration/*" element={<RegistrationDashboardLayout />}>
           <Route index element={<PatientQueue />} />
@@ -69,6 +98,19 @@ function App() {
           <Route path="departments" element={<DepartmentPage />} />
           <Route path="records" element={<RecordPage />} />
           <Route path="settings" element={<SettingsPage />} />
+        </Route>
+
+        {/* Patient Dashboard Routes */}
+        <Route path="/patient/*" element={<PatientDashboardLayout />}>
+          <Route index element={<PatientOverview />} />
+          <Route path="appointments" element={<PatientAppointments />} />
+          <Route path="records" element={<PatientRecords />} />
+          <Route path="medications" element={<PatientMedications />} />
+          <Route path="results" element={<PatientResults />} />
+          <Route path="tracking" element={<PatientTracking />} />
+          <Route path="messages" element={<PatientMessages />} />
+          <Route path="billing" element={<PatientBilling />} />
+          <Route path="education" element={<PatientEducation />} />
         </Route>
 
         {/* Billing Dashboard Routes */}
