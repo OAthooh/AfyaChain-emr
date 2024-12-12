@@ -39,6 +39,12 @@ import { PatientTracking } from './pages/patientDashboard/PatientTracking';
 import { PatientMessages } from './pages/patientDashboard/PatientMessages';
 import { PatientBilling } from './pages/patientDashboard/PatientBilling';
 import { PatientEducation } from './pages/patientDashboard/PatientEducation';
+import { BillingLayout } from './pages/billingDashboard/BillingLayout';
+import { BillingOverview } from './pages/billingDashboard/sidebarPages/BillingOverview';
+import { InvoiceTable } from './pages/billingDashboard/sidebarPages/InvoiceTable';
+import { TransactionList } from './pages/billingDashboard/sidebarPages/TransactionList';
+import { ReportsPage } from './pages/billingDashboard/sidebarPages/ReportsPage';
+import { BillingSettings } from './pages/billingDashboard/sidebarPages/BillingSettings';
 
 // Patient Integration Components
 import { HealthAnalytics } from './pages/patientDashboard/components/analytics/HealthAnalytics';
@@ -92,6 +98,7 @@ function App() {
           <Route path="messages" element={<MessagesPage />} />
         </Route>
 
+
         {/* Registration Dashboard Routes */}
         <Route path="/registration/*" element={<RegistrationDashboardLayout />}>
           <Route index element={<PatientQueue />} />
@@ -118,6 +125,15 @@ function App() {
           <Route path="analytics" element={<HealthAnalytics />} />
           <Route path="devices" element={<DeviceSync />} />
           <Route path="telemedicine" element={<TelemedicineIntegration />} />
+        </Route>
+
+        {/* Billing Dashboard Routes */}
+        <Route path="/billing/*" element={<BillingLayout />}>
+          <Route index element={<BillingOverview />} />
+          <Route path="invoices" element={<InvoiceTable dateRange="7d" filters={{ status: 'all', search: '' }} onViewInvoice={() => {}} />} />
+          <Route path="transactions" element={<TransactionList dateRange="7d" filters={{ status: 'all', paymentMethod: 'all', search: '' }} />} />
+          <Route path="reports" element={<ReportsPage />} />
+          <Route path="settings" element={<BillingSettings />} />
         </Route>
       </Routes>
     </BrowserRouter>
