@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Users, 
@@ -19,6 +19,15 @@ const navigation = [
 ];
 
 export function DashboardSidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Add your logout logic here
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/auth/login');
+  };
+
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
       <nav className="flex-1 px-4 py-6 space-y-1">
@@ -41,9 +50,12 @@ export function DashboardSidebar() {
       </nav>
       
       <div className="p-4 border-t border-gray-200">
-        <button className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-colors">
+        <button
+          onClick={handleLogout}
+          className="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+        >
           <LogOut className="h-5 w-5 mr-3" />
-          Logout
+          Log Out
         </button>
       </div>
     </aside>
