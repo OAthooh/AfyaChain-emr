@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, Clock, User, MapPin, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { ScheduleAppointmentModal } from './ScheduleAppointmentRecords';
 
 interface Appointment {
   id: string;
@@ -42,11 +43,14 @@ const appointments: Appointment[] = [
     location: 'Specialist Wing, Room 304',
     status: 'cancelled',
     notes: 'MRI scan and consultation'
-  },
-  // Add more appointment records as needed
+  }
 ];
 
 export function AppointmentRecords() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+
   const getStatusColor = (status: Appointment['status']) => {
     switch (status) {
       case 'upcoming':
@@ -77,34 +81,52 @@ export function AppointmentRecords() {
     }
   };
 
+  const filteredAppointments = appointments.filter(appointment => {
+    const matchesDepartment = selectedDepartment === 'all' || appointment.department.toLowerCase() === selectedDepartment;
+    const matchesStatus = selectedStatus === 'all' || appointment.status === selectedStatus;
+    return matchesDepartment && matchesStatus;
+  });
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Appointment Records</h2>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
           Schedule New Appointment
         </button>
       </div>
 
       {/* Filters */}
       <div className="flex gap-4 mb-6">
-        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option>All Appointments</option>
-          <option>Upcoming</option>
-          <option>Completed</option>
-          <option>Cancelled</option>
+        <select 
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+        >
+          <option value="all">All Appointments</option>
+          <option value="upcoming">Upcoming</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="rescheduled">Rescheduled</option>
         </select>
-        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option>All Departments</option>
-          <option>Cardiology</option>
-          <option>General Medicine</option>
-          <option>Neurology</option>
+        <select 
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={selectedDepartment}
+          onChange={(e) => setSelectedDepartment(e.target.value)}
+        >
+          <option value="all">All Departments</option>
+          <option value="cardiology">Cardiology</option>
+          <option value="general medicine">General Medicine</option>
+          <option value="neurology">Neurology</option>
         </select>
       </div>
 
       {/* Appointments List */}
       <div className="space-y-4">
-        {appointments.map((appointment) => (
+        {filteredAppointments.map((appointment) => (
           <div
             key={appointment.id}
             className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
@@ -164,6 +186,11 @@ export function AppointmentRecords() {
           </div>
         ))}
       </div>
+
+      <ScheduleAppointmentModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
