@@ -8,29 +8,29 @@ import AdministrativeDetailsForm from '../components/AdministrativeDetails';
 
 const RegistrationPage = () => {
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="w-full p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#2563EB]">Patient Registration</h1>
         <p className="text-gray-600">Enter new patient information below</p>
       </div>
       
-      <Tabs>
-        <TabList className="flex border-b mb-4">
-          <Tab className="px-4 py-2 cursor-pointer">Personal Information</Tab>
-          <Tab className="px-4 py-2 cursor-pointer">Insurance Details</Tab>
-          <Tab className="px-4 py-2 cursor-pointer">Administrative Info</Tab>
+      <Tabs className="w-full">
+        <TabList className="flex border-b mb-4 w-full">
+          <Tab className="flex-1 px-4 py-2 cursor-pointer text-center">Personal Information</Tab>
+          <Tab className="flex-1 px-4 py-2 cursor-pointer text-center">Insurance Details</Tab>
+          <Tab className="flex-1 px-4 py-2 cursor-pointer text-center">Administrative Info</Tab>
         </TabList>
 
-        <TabPanel>
+        <TabPanel className="w-full">
           <PatientRegistrationForm />
           <RegistrationDetails />
         </TabPanel>
         
-        <TabPanel>
+        <TabPanel className="w-full">
           <InsuranceInformationForm />
         </TabPanel>
         
-        <TabPanel>
+        <TabPanel className="w-full">
           <AdministrativeDetailsForm />
         </TabPanel>
       </Tabs>

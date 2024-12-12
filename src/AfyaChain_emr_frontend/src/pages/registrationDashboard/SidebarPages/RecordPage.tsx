@@ -1,6 +1,6 @@
 const RecordPage = () => {
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="w-[100%] ml-2">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#2563EB]">Patient Records</h1>
         <p className="text-gray-600">Manage appointments and patient registration</p>

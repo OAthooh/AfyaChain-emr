@@ -7,53 +7,59 @@ import {
   Building2,
   FileText
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
-const menuItems = [
-  { icon: Users, label: 'Patient Queue', href: '/registration' },
-  { icon: ClipboardList, label: 'Registration', href: '/registration/registration' },
-  { icon: Calendar, label: 'Appointments', href: '/registration/appointments' },
-  { icon: Building2, label: 'Departments', href: '/registration/departments' },
-  { icon: FileText, label: 'Records', href: '/registration/records' },
-  { icon: Settings, label: 'Settings', href: '/registration/settings' },
+const navigation = [
+  { name: 'Patient Queue', href: '/registration', icon: Users },
+  { name: 'Registration', href: '/registration/registration', icon: ClipboardList },
+  { name: 'Appointments', href: '/registration/appointments', icon: Calendar },
+  { name: 'Departments', href: '/registration/departments', icon: Building2 },
+  { name: 'Records', href: '/registration/records', icon: FileText },
+  { name: 'Settings', href: '/registration/settings', icon: Settings },
 ];
 
 const Sidebar = () => {
-  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/auth/login');
+  };
 
   return (
-    <div className="h-screen w-64 bg-white fixed left-0 top-0 flex flex-col border-r">
-      <div className="p-6">
-        <h2 className="text-2xl font-bold text-[#2563EB]">HealthCare EHR</h2>
-      </div>
+    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-white shadow-lg border-r border-gray-100">
       
-      <nav className="flex-1">
-        <ul className="space-y-2 px-4">
-          {menuItems.map((item, index) => (
-            <li key={index}>
-              <Link
-                to={item.href}
-                className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                  location.pathname === item.href
-                    ? 'bg-[#2563EB] text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                <span>{item.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
 
-      <div className="p-4 border-t">
-        <button className="flex items-center space-x-3 w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
-          <LogOut className="w-5 h-5" />
-          <span>Logout</span>
+      <nav className="p-4 space-y-2">
+        {navigation.map((item) => (
+          <NavLink
+            key={item.name}
+            to={item.href}
+            className={({ isActive }) =>
+              `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                isActive
+                  ? 'bg-blue-50 text-blue-700 shadow-sm'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600'
+              }`
+            }
+          >
+            <item.icon className="h-5 w-5 mr-3" />
+            {item.name}
+          </NavLink>
+        ))}
+      </nav>
+      
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
+        <button
+          onClick={handleLogout}
+          className="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-all duration-200"
+        >
+          <LogOut className="h-5 w-5 mr-3" />
+          Log Out
         </button>
       </div>
-    </div>
+    </aside>
   );
 };
 
