@@ -27,6 +27,7 @@ import RecordPage from './pages/registrationDashboard/SidebarPages/RecordPage';
 import SettingsPage from './pages/registrationDashboard/SidebarPages/SettingsPage';
 import { HealthRecordsLayout } from './pages/records/HealthRecordsLayout';
 import { HealthRecordsPage } from './pages/records/HealthRecordsPage';
+import { ReportsRecords } from './pages/records/ReportsRecords';
 
 // Patient Dashboard
 import { PatientDashboardLayout } from './pages/patientDashboard/PatientDashboardLayout';
@@ -64,7 +65,7 @@ function App() {
         <Route path="/health-records" element={<HealthRecordsLayout />}>
         <Route index element={<HealthRecordsPage activeSection={0} />} />
           <Route path="appointments" element={<HealthRecordsPage activeSection={1} />} />
-          <Route path="reports" element={<HealthRecordsPage activeSection={2} />} />
+          <Route path="reports" element={<ReportsRecords />} />
           <Route path="patient-info" element={<HealthRecordsPage activeSection={3} />} />
           <Route path="compliance" element={<HealthRecordsPage activeSection={4} />} />
           <Route path="analytics" element={<HealthRecordsPage activeSection={5} />} />
