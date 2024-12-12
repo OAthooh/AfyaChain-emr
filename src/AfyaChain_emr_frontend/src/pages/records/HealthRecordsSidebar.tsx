@@ -1,24 +1,30 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
-  LayoutDashboard, 
-  Users, 
+  Home, 
   Calendar, 
   FileText, 
-  BarChart2, 
-  MessageSquare,
-  LogOut 
+  User, 
+  Shield, 
+  BarChart, 
+  HelpCircle,
+  LogOut,
+  Settings,
+  Bell
 } from 'lucide-react';
 
 const navigation = [
-  { name: 'Overview', href: '/doctor', icon: LayoutDashboard },
-  { name: 'Patients', href: '/doctor/patients', icon: Users },
-  { name: 'Appointments', href: '/doctor/appointments', icon: Calendar },
-  { name: 'Prescriptions', href: '/doctor/prescriptions', icon: FileText },
-  { name: 'Analytics', href: '/doctor/analytics', icon: BarChart2 },
-  { name: 'Messages', href: '/doctor/messages', icon: MessageSquare },
+  { name: 'Home', href: '/health-records', icon: Home },
+  { name: 'Appointments', href: '/health-records/appointments', icon: Calendar },
+  { name: 'Reports', href: '/health-records/reports', icon: FileText },
+  { name: 'Patient Info', href: '/health-records/patient-info', icon: User },
+  { name: 'Compliance', href: '/health-records/compliance', icon: Shield },
+  { name: 'Analytics', href: '/health-records/analytics', icon: BarChart },
+  { name: 'Help', href: '/health-records/help', icon: HelpCircle },
+  { name: 'Settings', href: '/health-records/settings', icon: Settings },
+  { name: 'Notifications', href: '/health-records/notifications', icon: Bell },
 ];
 
-export function DashboardSidebar() {
+export function HealthRecordsSidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -30,7 +36,19 @@ export function DashboardSidebar() {
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
-      <nav className="flex-1 px-4 py-6 space-y-1">
+      <div className="p-4">
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+            <User className="h-6 w-6 text-blue-600" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-900">John Doe</p>
+            <p className="text-xs text-gray-500">Patient ID: #12345</p>
+          </div>
+        </div>
+      </div>
+
+      <nav className="flex-1 px-4 space-y-1">
         {navigation.map((item) => (
           <NavLink
             key={item.name}

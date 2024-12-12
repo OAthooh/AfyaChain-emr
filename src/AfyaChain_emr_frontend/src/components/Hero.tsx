@@ -1,4 +1,3 @@
-import React from 'react';
 import { ArrowRight } from 'lucide-react';
 
 export function Hero() {
@@ -7,12 +6,12 @@ export function Hero() {
       <div 
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: 'url("https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=2850&q=80")',
+          backgroundImage: 'url("hero.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-blue-800/75" />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-700/90 to-blue-900/75" />
       </div>
       
       <div className="container mx-auto px-6 relative z-10">
