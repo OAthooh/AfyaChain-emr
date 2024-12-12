@@ -25,11 +25,14 @@ import AppointmentPage from './pages/registrationDashboard/SidebarPages/Appointm
 import DepartmentPage from './pages/registrationDashboard/SidebarPages/DepartMentPage';
 import RecordPage from './pages/registrationDashboard/SidebarPages/RecordPage';
 import SettingsPage from './pages/registrationDashboard/SidebarPages/SettingsPage';
+
+// Health records dashboard
 import { HealthRecordsLayout } from './pages/records/HealthRecordsLayout';
 import { HealthRecordsPage } from './pages/records/HealthRecordsPage';
 import { ReportsRecords } from './pages/records/ReportsRecords';
 import { PatientInfoRecords } from './pages/records/PatientInfoRecords';
 import { ComplianceRecords } from './pages/records/ComplianceRecords';
+import { AnalyticsRecords } from './pages/records/AnalyticsRecords';
 
 // Patient Dashboard
 import { PatientDashboardLayout } from './pages/patientDashboard/PatientDashboardLayout';
@@ -70,7 +73,7 @@ function App() {
           <Route path="reports" element={<ReportsRecords />} />
           <Route path="patient-info" element={<PatientInfoRecords />} />
           <Route path="compliance" element={<ComplianceRecords />} />
-          <Route path="analytics" element={<HealthRecordsPage activeSection={5} />} />
+          <Route path="analytics" element={<AnalyticsRecords />} />
           <Route path="help" element={<HealthRecordsPage activeSection={6} />} />
           <Route path="settings" element={<HealthRecordsPage activeSection={7} />} />
           <Route path="notifications" element={<HealthRecordsPage activeSection={8} />} />
