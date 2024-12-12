@@ -1,11 +1,345 @@
-// src/pages/patientDashboard/PatientRecords.tsx
-import { useState } from 'react';
-import { FileText, Download, Filter, Search } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { FileText, Download, Filter, Search, ChevronDown } from 'lucide-react';
 import { Card } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Alert, AlertDescription } from '../../components/ui/alert';
+
+interface Record {
+  id: string;
+  title: string;
+  date: string;
+  provider: string;
+  type: string;
+  department: string;
+  category: 'conditions' | 'procedures' | 'immunizations' | 'laboratory' | 'examination';
+  details: string;
+  attachments?: string[];
+}
+
+interface ConditionItemProps {
+  condition: string;
+  diagnosedDate: string;
+  status: string;
+  severity: string;
+}
+
+interface ProcedureItemProps {
+  procedure: string;
+  date: string;
+  provider: string;
+  result: string;
+}
+
+interface RecordItemProps extends Record {
+  onClick: () => void;
+  isSelected: boolean;
+}
+
+interface Filters {
+  type: string[];
+  department: string[];
+  provider: string[];
+  dateRange: string;
+  category: ('conditions' | 'procedures' | 'immunizations' | 'laboratory' | 'examination')[];
+}
+
+function RecordItem({ 
+  title, 
+  date, 
+  provider, 
+  type, 
+  department, 
+  details,
+  attachments,
+  onClick,
+  isSelected 
+}: RecordItemProps) {
+  return (
+    <div 
+      className={`flex items-center justify-between p-4 bg-white rounded-lg border transition-colors cursor-pointer
+        ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}
+      onClick={onClick}
+    >
+      <div className="flex items-center space-x-4">
+        <div className="flex-shrink-0">
+          <FileText className="h-6 w-6 text-blue-600" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-gray-900">{title}</p>
+          <p className="text-sm text-gray-500">{provider} - {department}</p>
+          <p className="text-xs text-gray-500">
+            {new Date(date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </p>
+          {isSelected && (
+            <div className="mt-2">
+              <p className="text-sm text-gray-600">{details}</p>
+              {attachments && attachments.length > 0 && (
+                <div className="mt-2 space-x-2">
+                  {attachments.map((attachment, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Handle attachment download
+                      }}
+                    >
+                      <Download className="h-3 w-3 mr-1" />
+                      {attachment}
+                    </Button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center space-x-4">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+          {type}
+        </span>
+        {!isSelected && (
+          <button 
+            className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick();
+            }}
+          >
+            View
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ConditionItem({ condition, diagnosedDate, status, severity }: ConditionItemProps) {
+  return (
+    <div className="p-3 bg-gray-50 rounded-lg">
+      <div className="flex justify-between items-start">
+        <div>
+          <p className="font-medium text-gray-900">{condition}</p>
+          <p className="text-sm text-gray-500">Diagnosed: {diagnosedDate}</p>
+        </div>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+          ${status === 'Managed' ? 'bg-blue-100 text-blue-800' :
+            status === 'Controlled' ? 'bg-green-100 text-green-800' :
+            'bg-yellow-100 text-yellow-800'}`}
+        >
+          {status}
+        </span>
+      </div>
+      <p className="text-sm text-gray-600 mt-1">
+        Severity: 
+        <span className={`ml-1 font-medium
+          ${severity === 'Severe' ? 'text-red-600' :
+            severity === 'Moderate' ? 'text-yellow-600' :
+            'text-green-600'}`}
+        >
+          {severity}
+        </span>
+      </p>
+    </div>
+  );
+}
+
+function ProcedureItem({ procedure, date, provider, result }: ProcedureItemProps) {
+  return (
+    <div className="p-3 bg-gray-50 rounded-lg">
+      <div className="flex justify-between items-start">
+        <div>
+          <p className="font-medium text-gray-900">{procedure}</p>
+          <p className="text-sm text-gray-500">{provider}</p>
+        </div>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+          ${result === 'Normal' ? 'bg-green-100 text-green-800' :
+            result === 'Abnormal' ? 'bg-red-100 text-red-800' :
+            'bg-blue-100 text-blue-800'}`}
+        >
+          {result}
+        </span>
+      </div>
+      <p className="text-sm text-gray-600 mt-1">{date}</p>
+    </div>
+  );
+}
 
 export function PatientRecords() {
   const [activeTab, setActiveTab] = useState<'all' | 'conditions' | 'procedures' | 'immunizations'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<string | null>(null);
+  const [filters, setFilters] = useState<Filters>({
+    type: [],
+    department: [],
+    provider: [],
+    dateRange: 'all',
+    category: []
+  });
+
+  // Sample records data
+  const records: Record[] = [
+    {
+      id: '1',
+      title: "Annual Physical Examination",
+      date: "2024-10-10",
+      provider: "Dr. Sarah Smith",
+      type: "Examination",
+      department: "General Practice",
+      category: "examination",
+      details: "Routine annual physical examination. All vital signs normal.",
+      attachments: ["physical_exam_report.pdf"]
+    },
+    {
+      id: '2',
+      title: "Influenza Vaccination",
+      date: "2024-09-15",
+      provider: "Nurse John Davis",
+      type: "Immunization",
+      department: "Primary Care",
+      category: "immunizations",
+      details: "Seasonal flu vaccine administered. No adverse reactions."
+    },
+    {
+      id: '3',
+      title: "Blood Work Results",
+      date: "2024-08-22",
+      provider: "Dr. Michael Chang",
+      type: "Laboratory",
+      department: "Internal Medicine",
+      category: "laboratory",
+      details: "Comprehensive metabolic panel and complete blood count.",
+      attachments: ["lab_results.pdf"]
+    }
+  ];
+
+  // Get unique values for filters
+  const filterOptions = useMemo(() => ({
+    type: [...new Set(records.map(record => record.type))],
+    department: [...new Set(records.map(record => record.department))],
+    provider: [...new Set(records.map(record => record.provider))],
+    dateRanges: ['all', 'last30days', 'last6months', 'lastyear'],
+    category: ['conditions', 'procedures', 'immunizations', 'laboratory', 'examination']
+  }), [records]);
+
+  // Filter and search logic
+  const filteredRecords = useMemo(() => {
+    return records.filter(record => {
+      // Filter by tab
+      if (activeTab !== 'all' && record.category !== activeTab) return false;
+
+      // Apply search
+      if (searchQuery) {
+        const search = searchQuery.toLowerCase();
+        const searchMatch = 
+          record.title.toLowerCase().includes(search) ||
+          record.provider.toLowerCase().includes(search) ||
+          record.department.toLowerCase().includes(search) ||
+          record.details.toLowerCase().includes(search);
+        if (!searchMatch) return false;
+      }
+
+      // Apply filters
+      if (filters.type.length && !filters.type.includes(record.type)) return false;
+      if (filters.department.length && !filters.department.includes(record.department)) return false;
+      if (filters.provider.length && !filters.provider.includes(record.provider)) return false;
+      if (filters.category.length && !filters.category.includes(record.category)) return false;
+
+      // Date range filter
+      if (filters.dateRange !== 'all') {
+        const recordDate = new Date(record.date);
+        const today = new Date();
+        switch (filters.dateRange) {
+          case 'last30days':
+            const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
+            if (recordDate < thirtyDaysAgo) return false;
+            break;
+          case 'last6months':
+            const sixMonthsAgo = new Date(today.setMonth(today.getMonth() - 6));
+            if (recordDate < sixMonthsAgo) return false;
+            break;
+          case 'lastyear':
+            const oneYearAgo = new Date(today.setFullYear(today.getFullYear() - 1));
+            if (recordDate < oneYearAgo) return false;
+            break;
+        }
+      }
+
+      return true;
+    });
+  }, [records, activeTab, searchQuery, filters]);
+
+  // Download records
+  const handleDownloadRecords = () => {
+    const recordsToDownload = filteredRecords.map(record => ({
+      Title: record.title,
+      Date: record.date,
+      Provider: record.provider,
+      Type: record.type,
+      Department: record.department,
+      Category: record.category,
+      Details: record.details
+    }));
+
+    const csv = [
+      Object.keys(recordsToDownload[0]).join(','),
+      ...recordsToDownload.map(row => 
+        Object.values(row).map(value => `"${value}"`).join(',')
+      )
+    ].join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'medical_records.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  // Toggle filter
+  const isCategoryType = (
+    value: string
+  ): value is 'conditions' | 'procedures' | 'immunizations' | 'laboratory' | 'examination' => {
+    return ['conditions', 'procedures', 'immunizations', 'laboratory', 'examination'].includes(value);
+  };
+  
+  const toggleFilter = (type: keyof Filters, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [type]: Array.isArray(prev[type])
+        ? type === 'category'
+          ? isCategoryType(value)
+            ? (prev.category.includes(value)
+              ? prev.category.filter(v => v !== value)
+              : [...prev.category, value])
+            : prev.category
+          : prev[type].includes(value)
+            ? prev[type].filter(v => v !== value)
+            : [...prev[type], value]
+        : value
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      type: [],
+      department: [],
+      provider: [],
+      dateRange: 'all',
+      category: []
+    });
+    setSearchQuery('');
+  };
 
   const tabs = [
     { id: 'all', label: 'All Records' },
@@ -20,9 +354,13 @@ export function PatientRecords() {
         <h1 className="text-2xl font-bold text-gray-900">Medical Records</h1>
         
         <div className="flex space-x-3">
-          <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+          <Button 
+            variant="outline"
+            onClick={handleDownloadRecords}
+            className="inline-flex items-center"
+          >
             <Download className="h-4 w-4 mr-1" /> Download Records
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -39,10 +377,99 @@ export function PatientRecords() {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <button className="ml-4 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-            <Filter className="h-4 w-4 mr-2" /> Filters
-          </button>
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className={`inline-flex items-center ${showFilters ? 'bg-blue-50' : ''}`}
+            >
+              <Filter className="h-4 w-4 mr-1" />
+              Filters
+              <ChevronDown className={`h-4 w-4 ml-1 transform transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+            </Button>
+            {Object.values(filters).some(f => Array.isArray(f) ? f.length > 0 : f !== 'all') && (
+              <Button
+                variant="ghost"
+                onClick={clearFilters}
+                className="text-sm text-gray-500"
+              >
+                Clear all
+              </Button>
+            )}
+          </div>
         </div>
+
+        {/* Filter Panel */}
+        {showFilters && (
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                <div className="space-y-2">
+                  {filterOptions.type.map(type => (
+                    <label key={type} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={filters.type.includes(type)}
+                        onChange={() => toggleFilter('type', type)}
+                        className="rounded border-gray-300 text-blue-600"
+                      />
+                      <span className="ml-2 text-sm text-gray-600">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                <div className="space-y-2">
+                  {filterOptions.department.map(dept => (
+                    <label key={dept} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={filters.department.includes(dept)}
+                        onChange={() => toggleFilter('department', dept)}
+                        className="rounded border-gray-300 text-blue-600"
+                      />
+                      <span className="ml-2 text-sm text-gray-600">{dept}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Provider</label>
+                <div className="space-y-2">
+                  {filterOptions.provider.map(provider => (
+                    <label key={provider} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={filters.provider.includes(provider)}
+                        onChange={() => toggleFilter('provider', provider)}
+                        className="rounded border-gray-300 text-blue-600"
+                      />
+                      <span className="ml-2 text-sm text-gray-600">{provider}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                <select
+                  value={filters.dateRange}
+                  onChange={(e) => toggleFilter('dateRange', e.target.value)}
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                >
+                  <option value="all">All Time</option>
+                  <option value="last30days">Last 30 Days</option>
+                  <option value="last6months">Last 6 Months</option>
+                  <option value="lastyear">Last Year</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">
@@ -67,27 +494,22 @@ export function PatientRecords() {
 
         {/* Records List */}
         <div className="mt-6 space-y-4">
-          <RecordItem
-            title="Annual Physical Examination"
-            date="Oct 10, 2024"
-            provider="Dr. Sarah Smith"
-            type="Examination"
-            department="General Practice"
-          />
-          <RecordItem
-            title="Influenza Vaccination"
-            date="Sep 15, 2024"
-            provider="Nurse John Davis"
-            type="Immunization"
-            department="Primary Care"
-          />
-          <RecordItem
-            title="Blood Work Results"
-            date="Aug 22, 2024"
-            provider="Dr. Michael Chang"
-            type="Laboratory"
-            department="Internal Medicine"
-          />
+          {filteredRecords.length > 0 ? (
+            filteredRecords.map((record) => (
+              <RecordItem
+                key={record.id}
+                {...record}
+                onClick={() => setSelectedRecord(record.id)}
+                isSelected={selectedRecord === record.id}
+              />
+            ))
+          ) : (
+            <Alert>
+              <AlertDescription>
+                No records found matching your search criteria.
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
       </Card>
 
@@ -129,87 +551,6 @@ export function PatientRecords() {
           </div>
         </Card>
       </div>
-    </div>
-  );
-}
-
-interface RecordItemProps {
-  title: string;
-  date: string;
-  provider: string;
-  type: string;
-  department: string;
-}
-
-function RecordItem({ title, date, provider, type, department }: RecordItemProps) {
-  return (
-    <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
-      <div className="flex items-center space-x-4">
-        <div className="flex-shrink-0">
-          <FileText className="h-6 w-6 text-blue-600" />
-        </div>
-        <div>
-          <p className="text-sm font-medium text-gray-900">{title}</p>
-          <p className="text-sm text-gray-500">{provider} - {department}</p>
-          <p className="text-xs text-gray-500">{date}</p>
-        </div>
-      </div>
-      <div className="flex items-center space-x-4">
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-          {type}
-        </span>
-        <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-          View
-        </button>
-      </div>
-    </div>
-  );
-}
-
-interface ConditionItemProps {
-  condition: string;
-  diagnosedDate: string;
-  status: string;
-  severity: string;
-}
-
-function ConditionItem({ condition, diagnosedDate, status, severity }: ConditionItemProps) {
-  return (
-    <div className="p-3 bg-gray-50 rounded-lg">
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="font-medium text-gray-900">{condition}</p>
-          <p className="text-sm text-gray-500">Diagnosed: {diagnosedDate}</p>
-        </div>
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-          {status}
-        </span>
-      </div>
-      <p className="text-sm text-gray-600 mt-1">Severity: {severity}</p>
-    </div>
-  );
-}
-
-interface ProcedureItemProps {
-  procedure: string;
-  date: string;
-  provider: string;
-  result: string;
-}
-
-function ProcedureItem({ procedure, date, provider, result }: ProcedureItemProps) {
-  return (
-    <div className="p-3 bg-gray-50 rounded-lg">
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="font-medium text-gray-900">{procedure}</p>
-          <p className="text-sm text-gray-500">{provider}</p>
-        </div>
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-          {result}
-        </span>
-      </div>
-      <p className="text-sm text-gray-600 mt-1">{date}</p>
     </div>
   );
 }

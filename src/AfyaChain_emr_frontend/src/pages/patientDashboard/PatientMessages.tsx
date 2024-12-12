@@ -1,7 +1,6 @@
 // src/pages/patientDashboard/PatientMessages.tsx
 import { useState } from 'react';
 import { Search, Send, Paperclip, Phone, Video, MoreVertical, Circle } from 'lucide-react';
-import { Card } from '../../components/ui/card';
 
 interface Message {
   id: string;

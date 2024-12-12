@@ -1,7 +1,6 @@
 // src/pages/patientDashboard/PatientEducation.tsx
 import { useState } from 'react';
 import { 
-  BookOpen, 
   Search, 
   Play, 
   FileText, 
@@ -9,7 +8,6 @@ import {
   BookMarked,
   Heart,
   Activity,
-  Filter,
   Clock,
   ChevronRight
 } from 'lucide-react';
@@ -166,7 +164,7 @@ function FeaturedResourceCard({ resource }: { resource: Resource }) {
   );
 }
 
-function CategoryCard({ id, name, icon: Icon }: {
+function CategoryCard({ name, icon: Icon }: {
   id: string;
   name: string;
   icon: any;

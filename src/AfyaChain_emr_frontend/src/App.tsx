@@ -5,6 +5,10 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { Header } from './components/Header';
+import { PublicLayout } from './layouts/PublicLayout';
+import { HomePage } from './pages/HomePage';
+
+// Doctor Dashboard
 import { DashboardLayout } from './pages/doctorDashboard/DashboardLayout';
 import { DashboardOverview } from './pages/doctorDashboard/DashboardOverview';
 import { PatientsPage } from './pages/doctorDashboard/PatientsPage';
@@ -12,8 +16,8 @@ import { AppointmentsPage } from './pages/doctorDashboard/AppointmentsPage';
 import { PrescriptionsPage } from './pages/doctorDashboard/PrescriptionsPage';
 import { AnalyticsPage } from './pages/doctorDashboard/AnalyticsPage';
 import { MessagesPage } from './pages/doctorDashboard/MessagesPage';
-import { PublicLayout } from './layouts/PublicLayout';
-import { HomePage } from './pages/HomePage';
+
+// Registration Dashboard
 import { RegistrationDashboardLayout } from './pages/registrationDashboard/DashboardLayout';
 import PatientQueue from './pages/registrationDashboard/components/PatientQue';
 import RegistrationPage from './pages/registrationDashboard/SidebarPages/RegistrationPage';
@@ -22,7 +26,7 @@ import DepartmentPage from './pages/registrationDashboard/SidebarPages/DepartMen
 import RecordPage from './pages/registrationDashboard/SidebarPages/RecordPage';
 import SettingsPage from './pages/registrationDashboard/SidebarPages/SettingsPage';
 
-// Patient Dashboard Imports
+// Patient Dashboard
 import { PatientDashboardLayout } from './pages/patientDashboard/PatientDashboardLayout';
 import { PatientOverview } from './pages/patientDashboard/PatientOverview';
 import { PatientAppointments } from './pages/patientDashboard/PatientAppointments';
@@ -33,6 +37,11 @@ import { PatientTracking } from './pages/patientDashboard/PatientTracking';
 import { PatientMessages } from './pages/patientDashboard/PatientMessages';
 import { PatientBilling } from './pages/patientDashboard/PatientBilling';
 import { PatientEducation } from './pages/patientDashboard/PatientEducation';
+
+// Patient Integration Components
+import { HealthAnalytics } from './pages/patientDashboard/components/analytics/HealthAnalytics';
+import { DeviceSync } from './pages/patientDashboard/components/intergration/DeviceSync';
+import { TelemedicineIntegration } from './pages/patientDashboard/components/intergration/TelemedicineIntegration';
 
 function App() {
   return (
@@ -58,7 +67,7 @@ function App() {
           </>
         } />
            
-        {/* Doctor Dashboard Routes - No shared header */}
+        {/* Doctor Dashboard Routes */}
         <Route path="/doctor/*" element={<DashboardLayout />}>
           <Route index element={<DashboardOverview />} />
           <Route path="patients" element={<PatientsPage />} />
@@ -89,6 +98,11 @@ function App() {
           <Route path="messages" element={<PatientMessages />} />
           <Route path="billing" element={<PatientBilling />} />
           <Route path="education" element={<PatientEducation />} />
+          
+          {/* New Integration Routes */}
+          <Route path="analytics" element={<HealthAnalytics />} />
+          <Route path="devices" element={<DeviceSync />} />
+          <Route path="telemedicine" element={<TelemedicineIntegration />} />
         </Route>
       </Routes>
     </BrowserRouter>

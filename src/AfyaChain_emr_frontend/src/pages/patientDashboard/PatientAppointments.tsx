@@ -1,16 +1,123 @@
-// src/pages/patientDashboard/PatientAppointments.tsx
 import { useState } from 'react';
-import { Calendar, List, Plus, Clock, AlertCircle } from 'lucide-react';
+import { Calendar, List, Plus, Clock, AlertCircle, X } from 'lucide-react';
 import { Card } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Alert, AlertDescription } from '../../components/ui/alert';
+import { ScheduleModal } from './ScheduleModal';
+import { CalendarView } from './CalendarView';
 
 type ViewMode = 'calendar' | 'list';
+type Status = 'upcoming' | 'completed' | 'cancelled';
+
+interface Appointment {
+  id: string;
+  date: string;
+  time: string;
+  doctor: string;
+  department: string;
+  type: string;
+  status: Status;
+}
+
+interface Filters {
+  status: string;
+  dateRange: string;
+  department: string;
+}
 
 export function PatientAppointments() {
   const [viewMode, setViewMode] = useState<ViewMode>('calendar');
-  const [filters, setFilters] = useState({
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [filters, setFilters] = useState<Filters>({
     status: 'all',
     dateRange: 'upcoming',
     department: 'all'
+  });
+  const [appointments, setAppointments] = useState<Appointment[]>([
+    {
+      id: '1',
+      date: "Oct 15, 2024",
+      time: "2:30 PM",
+      doctor: "Dr. Sarah Smith",
+      department: "Cardiology",
+      type: "Follow-up",
+      status: "upcoming"
+    },
+    {
+      id: '2',
+      date: "Oct 20, 2024",
+      time: "10:00 AM",
+      doctor: "Dr. James Wilson",
+      department: "General Practice",
+      type: "Regular Checkup",
+      status: "upcoming"
+    }
+  ]);
+
+  const handleScheduleAppointment = (appointmentData: {
+    doctor: string;
+    department: string;
+    date: string;
+    time: string;
+    type: string;
+  }) => {
+    const newAppointment: Appointment = {
+      id: String(Date.now()),
+      ...appointmentData,
+      status: 'upcoming'
+    };
+    setAppointments(prev => [...prev, newAppointment]);
+  };
+
+  const handleCancelAppointment = (appointmentId: string) => {
+    setAppointments(prev => 
+      prev.map(app => 
+        app.id === appointmentId 
+          ? { ...app, status: 'cancelled' as Status }
+          : app
+      )
+    );
+  };
+
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+    setShowScheduleModal(true);
+  };
+
+  const handleFilterChange = (key: keyof Filters, value: string) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const filteredAppointments = appointments.filter(app => {
+    // Status filter
+    if (filters.status !== 'all' && app.status !== filters.status) return false;
+    
+    // Department filter
+    if (filters.department !== 'all' && app.department.toLowerCase() !== filters.department) return false;
+    
+    // Date range filter
+    const appointmentDate = new Date(app.date);
+    const today = new Date();
+    
+    switch (filters.dateRange) {
+      case 'upcoming':
+        return appointmentDate >= today;
+      case 'past':
+        return appointmentDate < today;
+      case '30days': {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+        return appointmentDate >= thirtyDaysAgo && appointmentDate <= today;
+      }
+      case '6months': {
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(today.getMonth() - 6);
+        return appointmentDate >= sixMonthsAgo && appointmentDate <= today;
+      }
+      default:
+        return true;
+    }
   });
 
   return (
@@ -18,13 +125,12 @@ export function PatientAppointments() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">My Appointments</h1>
         
-        <div className="flex space-x-3">
-          <button 
-            className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-          >
-            <Plus className="h-4 w-4 mr-1" /> Schedule Appointment
-          </button>
-        </div>
+        <Button 
+          onClick={() => setShowScheduleModal(true)}
+          className="inline-flex items-center bg-blue-600 hover:bg-blue-700"
+        >
+          <Plus className="h-4 w-4 mr-1" /> Schedule Appointment
+        </Button>
       </div>
 
       <Card className="p-6">
@@ -32,111 +138,105 @@ export function PatientAppointments() {
           {/* Filters */}
           <div className="flex justify-between items-center">
             <div className="flex space-x-4">
-              <select
-                value={filters.status}
-                onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="all">All Status</option>
-                <option value="upcoming">Upcoming</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-
-              <select
-                value={filters.dateRange}
-                onChange={(e) => setFilters(prev => ({ ...prev, dateRange: e.target.value }))}
-                className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="upcoming">Upcoming</option>
-                <option value="past">Past</option>
-                <option value="30days">Last 30 Days</option>
-                <option value="6months">Last 6 Months</option>
-              </select>
-
-              <select
-                value={filters.department}
-                onChange={(e) => setFilters(prev => ({ ...prev, department: e.target.value }))}
-                className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="all">All Departments</option>
-                <option value="general">General Practice</option>
-                <option value="cardiology">Cardiology</option>
-                <option value="orthopedics">Orthopedics</option>
-              </select>
+              {Object.entries({
+                status: ['All Status', 'Upcoming', 'Completed', 'Cancelled'],
+                dateRange: ['Upcoming', 'Past', 'Last 30 Days', 'Last 6 Months'],
+                department: ['All Departments', 'General Practice', 'Cardiology', 'Orthopedics']
+              }).map(([key, options]) => (
+                <select
+                  key={key}
+                  value={filters[key as keyof Filters]}
+                  onChange={(e) => handleFilterChange(key as keyof Filters, e.target.value)}
+                  className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                >
+                  {options.map(option => (
+                    <option 
+                      key={option} 
+                      value={option.toLowerCase().replace(' ', '')}
+                    >
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              ))}
             </div>
 
             <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setViewMode('calendar')}
-                className={`inline-flex items-center px-3 py-1.5 border text-sm font-medium rounded-lg ${
-                  viewMode === 'calendar'
-                    ? 'border-blue-600 text-blue-600 bg-blue-50'
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <Calendar className="h-4 w-4 mr-1" /> Calendar
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`inline-flex items-center px-3 py-1.5 border text-sm font-medium rounded-lg ${
-                  viewMode === 'list'
-                    ? 'border-blue-600 text-blue-600 bg-blue-50'
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <List className="h-4 w-4 mr-1" /> List
-              </button>
+              {(['calendar', 'list'] as const).map((mode) => (
+                <Button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  variant={viewMode === mode ? 'outline' : 'ghost'}
+                  className={`${
+                    viewMode === mode
+                      ? 'border-blue-600 text-blue-600 bg-blue-50'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {mode === 'calendar' ? (
+                    <Calendar className="h-4 w-4 mr-1" />
+                  ) : (
+                    <List className="h-4 w-4 mr-1" />
+                  )}
+                  {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                </Button>
+              ))}
             </div>
           </div>
 
           {/* Calendar/List View */}
           <div className="mt-6">
             {viewMode === 'calendar' ? (
-              <div className="min-h-[600px] bg-gray-50 rounded-lg p-4">
-                {/* Calendar component would go here */}
-                <p className="text-gray-600 text-center py-8">Calendar view coming soon</p>
-              </div>
+              <CalendarView 
+                appointments={filteredAppointments}
+                onDateSelect={handleDateSelect}
+              />
             ) : (
               <div className="space-y-4">
-                {/* Example appointment items */}
-                <AppointmentItem
-                  date="Oct 15, 2024"
-                  time="2:30 PM"
-                  doctor="Dr. Sarah Smith"
-                  department="Cardiology"
-                  type="Follow-up"
-                  status="upcoming"
-                />
-                <AppointmentItem
-                  date="Oct 20, 2024"
-                  time="10:00 AM"
-                  doctor="Dr. James Wilson"
-                  department="General Practice"
-                  type="Regular Checkup"
-                  status="upcoming"
-                />
+                {filteredAppointments.length > 0 ? (
+                  filteredAppointments.map((appointment) => (
+                    <AppointmentItem
+                      key={appointment.id}
+                      {...appointment}
+                      onCancel={() => handleCancelAppointment(appointment.id)}
+                    />
+                  ))
+                ) : (
+                  <Alert>
+                    <AlertDescription>
+                      No appointments found matching your filters.
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
             )}
           </div>
         </div>
       </Card>
+
+      {/* Scheduling Modal */}
+      <ScheduleModal
+        isOpen={showScheduleModal}
+        onClose={() => {
+          setShowScheduleModal(false);
+          setSelectedDate(null);
+        }}
+        onSchedule={handleScheduleAppointment}
+        initialDate={selectedDate}
+      />
     </div>
   );
 }
 
-interface AppointmentItemProps {
-  date: string;
-  time: string;
-  doctor: string;
-  department: string;
-  type: string;
-  status: 'upcoming' | 'completed' | 'cancelled';
+interface AppointmentItemProps extends Appointment {
+  onCancel: () => void;
 }
 
-function AppointmentItem({ date, time, doctor, department, type, status }: AppointmentItemProps) {
+function AppointmentItem({ date, time, doctor, department, type, status, onCancel }: AppointmentItemProps) {
+  const [showDetails, setShowDetails] = useState(false);
+
   return (
-    <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
+    <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 transition-colors">
       <div className="flex items-center space-x-4">
         <div className="flex-shrink-0">
           <Clock className="h-8 w-8 text-blue-600" />
@@ -145,6 +245,13 @@ function AppointmentItem({ date, time, doctor, department, type, status }: Appoi
           <p className="text-sm font-medium text-gray-900">{date} at {time}</p>
           <p className="text-sm text-gray-600">{doctor} - {department}</p>
           <p className="text-sm text-gray-500">{type}</p>
+          {showDetails && (
+            <div className="mt-2 text-sm text-gray-500">
+              <p>Location: Virtual Visit</p>
+              <p>Duration: 30 minutes</p>
+              <p>Notes: Please arrive 5 minutes early</p>
+            </div>
+          )}
         </div>
       </div>
       <div className="flex items-center space-x-4">
@@ -154,9 +261,26 @@ function AppointmentItem({ date, time, doctor, department, type, status }: Appoi
             'bg-red-100 text-red-800'}`}>
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
-        <button className="text-gray-400 hover:text-gray-500">
-          <AlertCircle className="h-5 w-5" />
-        </button>
+        <div className="flex space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowDetails(!showDetails)}
+            className="text-gray-400 hover:text-gray-500"
+          >
+            <AlertCircle className="h-5 w-5" />
+          </Button>
+          {status === 'upcoming' && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onCancel}
+              className="text-red-400 hover:text-red-500"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
